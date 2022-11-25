@@ -81,5 +81,15 @@ class TestIgnore(unittest.TestCase):
             (16, ["fuga"])
         )
 
+class TestMapping(unittest.TestCase):
+    def test_map(self):
+        self.assertEqual(
+            combinator.map(
+                combinator.token(re.compile(r"(?:[1-9][0-9]+|[0-9])(?:\.[0-9]*)?")),
+                lambda s, _: float(s)
+            )(0, "3.14159"),
+            (7, 3.14159)
+        )
+
 if __name__ == '__main__':
     unittest.main()

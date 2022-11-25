@@ -5,7 +5,7 @@ description = ""
 authors = ["ikasoba <57828948+ikasoba@users.noreply.github.com>"]
 license = "MIT"
 readme = "README.md"
-packages = [{include = "py_combinator"}]
+packages = [{include = "pycombinator"}]
 
 [tool.poetry.dependencies]
 python = "^3.11"

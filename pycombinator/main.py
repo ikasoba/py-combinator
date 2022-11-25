@@ -2,10 +2,12 @@ import re
 import typing
 
 T = typing.TypeVar("T")
+R = typing.TypeVar("R")
 
 IgnoreParserFunc = typing.Callable[[int, str], typing.Tuple[int, T, typing.Literal["ignore"]] | None]
 _ParserFunc = typing.Callable[[int, str], typing.Tuple[int, T] | None]
 ParserFunc = typing.Union[IgnoreParserFunc[T], _ParserFunc[T]]
+MappingFunc = typing.Callable[[T, int], R]
 
 def token(pattern: str | re.Pattern) -> ParserFunc[str]:
     def f(i: int, s: str):
@@ -45,4 +47,12 @@ def some(*parsers: ParserFunc[T]) -> ParserFunc[T]:
             i = m[0]
             return i, m[1]
         return None
+    return f
+
+def map(parser: ParserFunc[T], func: MappingFunc[T, R]) -> ParserFunc[R]:
+    def f(i: int, s: str):
+        m = parser(i, s)
+        if not m: return None
+        i = m[0]
+        return i, func(m[1], i)
     return f
