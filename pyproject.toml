@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "py-combinator"
+name = "pycombinator"
 version = "0.1.0"
 description = ""
 authors = ["ikasoba <57828948+ikasoba@users.noreply.github.com>"]
