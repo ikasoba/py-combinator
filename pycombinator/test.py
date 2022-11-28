@@ -91,5 +91,18 @@ class TestMapping(unittest.TestCase):
             (7, 3.14159)
         )
 
+class TestLoop(unittest.TestCase):
+    def test_map(self):
+        self.assertEqual(
+            combinator.loop(
+                combinator.some(
+                    combinator.token("hoge"),
+                    combinator.token("fuga"),
+                    combinator.token("foo")
+                )
+            )(0, "hogefugahogehogefugafoo"),
+            (23, ["hoge","fuga","hoge","hoge","fuga","foo"])
+        )
+
 if __name__ == '__main__':
     unittest.main()

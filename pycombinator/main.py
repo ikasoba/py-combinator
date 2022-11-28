@@ -9,6 +9,9 @@ _ParserFunc = typing.Callable[[int, str], typing.Tuple[int, T] | None]
 ParserFunc = typing.Union[IgnoreParserFunc[T], _ParserFunc[T]]
 MappingFunc = typing.Callable[[T, int], R]
 
+def isIgnoreResponse(res: typing.Tuple[int, T] | typing.Tuple[int, T, typing.Literal["ignore"]]):
+    return len(res) >= 3 and typing.cast(list[typing.Any], res)[2] == "ignore"
+
 def token(pattern: str | re.Pattern) -> ParserFunc[str]:
     def f(i: int, s: str):
         if isinstance(pattern, re.Pattern):
@@ -55,4 +58,14 @@ def map(parser: ParserFunc[T], func: MappingFunc[T, R]) -> ParserFunc[R]:
         if not m: return None
         i = m[0]
         return i, func(m[1], i)
+    return f
+
+def loop(parser: ParserFunc[T]) -> ParserFunc[list[T]]:
+    def f(i: int, s: str):
+        res = list[T]()
+        while True:
+            m = parser(i, s)
+            if not m: return (i, res) if len(res) else None
+            i = m[0]
+            if not (len(m) >= 3 and typing.cast(list[typing.Any], m)[2] != "ignore"): res.append(m[1])
     return f
