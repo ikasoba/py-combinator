@@ -78,3 +78,9 @@ def loop(parser: ParserFunc[T]) -> ParserFunc[list[T]]:
             i = m[0]
             if not (len(m) >= 3 and typing.cast(list[typing.Any], m)[2] != "ignore"): res.append(m[1])
     return f
+
+def option(parser: ParserFunc[T]) -> ParserFunc[T | str]:
+    def f(i: int, s: str):
+        res = parser(i, s)
+        return res if res else (i+1, "")
+    return f
