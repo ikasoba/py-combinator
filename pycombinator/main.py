@@ -24,6 +24,9 @@ def token(pattern: str | re.Pattern) -> ParserFunc[str]:
             return (i + len(pattern), pattern) if s.startswith(pattern, i) else None
     return f
 
+def regex(pattern: str) -> ParserFunc[str]:
+    return token(re.compile(pattern))
+
 def ignore(parser: ParserFunc[T]) -> IgnoreParserFunc[T]:
     def f(i: int, s: str):
         m = parser(i, s)
