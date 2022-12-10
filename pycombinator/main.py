@@ -19,7 +19,13 @@ def token(pattern: str | re.Pattern) -> ParserFunc[str]:
             if not m: return None
             groups = m.groups()
             i += len(m.group())
-            return (i, groups[0] if len(groups) else m.group())
+            res = None
+            if len(groups) >= 2:
+                res = groups[1]
+            elif len(groups):
+                res = groups[0]
+            else: res = m.group()
+            return (i, res)
         else:
             return (i + len(pattern), pattern) if s.startswith(pattern, i) else None
     return f
