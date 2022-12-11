@@ -1,6 +1,6 @@
 [tool.poetry]
 name = "pycombinator"
-version = "0.4.0"
+version = "0.4.1"
 description = ""
 authors = ["ikasoba <57828948+ikasoba@users.noreply.github.com>"]
 license = "MIT"

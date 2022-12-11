@@ -2,6 +2,7 @@ import re
 import typing
 
 T = typing.TypeVar("T")
+V = typing.TypeVar("V")
 R = typing.TypeVar("R")
 
 IgnoreParserFunc = typing.Callable[[int, str], typing.Tuple[int, T, typing.Literal["ignore"]] | None]
@@ -16,7 +17,7 @@ def token(pattern: str | re.Pattern) -> ParserFunc[str]:
     def f(i: int, s: str):
         if isinstance(pattern, re.Pattern):
             m = pattern.match(s, i)
-            if not m: return None
+            if m is None: return None
             groups = m.groups()
             i += len(m.group())
             res = None
@@ -44,7 +45,7 @@ def join(*parsers: ParserFunc[T]) -> ParserFunc[list[T]]:
         res = []
         for parser in parsers:
             m = parser(i, s)
-            if not m: return None
+            if m is None: return None
             i = m[0]
             if not (len(m) >= 3 and typing.cast(list[typing.Any], m)[2] != "ignore"):
                 res.append(m[1])
@@ -55,7 +56,7 @@ def some(*parsers: ParserFunc[T]) -> ParserFunc[T]:
     def f(i: int, s: str):
         for parser in parsers:
             m = parser(i, s)
-            if not m: continue
+            if m is None: continue
             i = m[0]
             return i, m[1]
         return None
@@ -64,7 +65,7 @@ def some(*parsers: ParserFunc[T]) -> ParserFunc[T]:
 def map(parser: ParserFunc[T], func: MappingFunc[T, R]) -> ParserFunc[R]:
     def f(i: int, s: str):
         m = parser(i, s)
-        if not m: return None
+        if m is None: return None
         i = m[0]
         return i, func(m[1], i)
     return f
@@ -74,13 +75,13 @@ def loop(parser: ParserFunc[T]) -> ParserFunc[list[T]]:
         res = list[T]()
         while True:
             m = parser(i, s)
-            if not m: return (i, res) if len(res) else None
+            if m is None: return (i, res) if len(res) else None
             i = m[0]
             if not (len(m) >= 3 and typing.cast(list[typing.Any], m)[2] != "ignore"): res.append(m[1])
     return f
 
-def option(parser: ParserFunc[T]) -> ParserFunc[T | str]:
+def option(parser: ParserFunc[T], default: V) -> ParserFunc[T | V]:
     def f(i: int, s: str):
         res = parser(i, s)
-        return res if res else (i+1, "")
+        return (i, "") if res == None else res
     return f
