@@ -85,3 +85,8 @@ def option(parser: ParserFunc[T], default: V) -> ParserFunc[T | V]:
         res = parser(i, s)
         return (i, "") if res == None else res
     return f
+
+def ref(parser_ref: typing.Callable[[], ParserFunc[T]]) -> ParserFunc[T]:
+    def f(i: int, s: str):
+        return parser_ref()(i, s)
+    return f
